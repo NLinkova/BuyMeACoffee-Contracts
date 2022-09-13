@@ -50,6 +50,32 @@ async function main() {
   const addresses = [owner.address, tipper.address, buyMeACoffee.address];
   console.log("== start ==");
   await printBalances(addresses);
+
+  // Buy the owner a few coffees.
+  const tip = { value: hre.ethers.utils.parseEther("1") };
+  await buyMeACoffee
+    .connect(tipper)
+    .buyCoffee("Katrine", "You're the best!", tip);
+  await buyMeACoffee.connect(tipper2).buyCoffee("Jo", "Amazing app", tip);
+  await buyMeACoffee
+    .connect(tipper3)
+    .buyCoffee("Kay", "I love my Proof of Knowledge", tip);
+
+  // Check balances after the coffee purchase.
+  console.log("== bought coffee ==");
+  await printBalances(addresses);
+
+    // Withdraw.
+    await buyMeACoffee.connect(owner).withdrawTips();
+
+    // Check balances after withdrawal.
+    console.log("== withdrawTips ==");
+    await printBalances(addresses);
+
+    // Check out the memos.
+    console.log("== memos ==");
+    const memos = await buyMeACoffee.getMemos();
+    printMemos(memos);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
